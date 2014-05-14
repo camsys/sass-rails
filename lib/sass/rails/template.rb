@@ -19,6 +19,11 @@ module Sprockets
       }
 
       sass_config = context.environment.context_class.sass_config.merge(options)
+
+      # This is a MASSIVE kludge to get what we need in the short term
+      sass_config.load_paths +=
+        context.environment.context_class.sass_config[:load_paths].map { |path| SassImporter.new(context, path) }
+
       ::Sass::Engine.new(data, sass_config).render
     rescue ::Sass::SyntaxError => e
       context.__LINE__ = e.sass_backtrace.first[:line]
